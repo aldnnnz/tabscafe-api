@@ -1,0 +1,102 @@
+generator client {
+  provider = "prisma-client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum RoastType {
+  light
+  light_medium
+  medium
+  medium_dark
+  dark
+}
+
+enum OrderStatus {
+  pending
+  paid
+  shipped
+  done
+  cancelled
+}
+
+enum UserRole {
+  ADMIN
+  CUSTOMER
+}
+
+model User {
+  id                 String   @id @default(uuid())
+  name               String
+  email              String   @unique
+  password           String
+  role               UserRole @default(CUSTOMER)
+  phone              String?
+  address            String?
+  emailVerified      Boolean  @default(false)
+  emailVerifyToken   String?
+  emailVerifyExpires DateTime?
+  createdAt          DateTime @default(now())
+
+  orders             Order[]
+  recentlyViewed     RecentlyViewedProduct[]
+}
+
+model Category {
+  id        Int       @id @default(autoincrement())
+  name      String
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  products  Product[]
+}
+
+model Product {
+  id          Int       @id @default(autoincrement())
+  name        String
+  slug        String   @unique
+  description String?
+  notes       String?
+  origin      String?
+  badge       String?
+  image       String?
+  price       Int
+  isAvailable Boolean  @default(true)
+  roast       RoastType
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  categoryId  Int
+  category    Category @relation(fields: [categoryId], references: [id])
+
+  recentlyViewed RecentlyViewedProduct[]
+}
+
+model Order {
+  id            Int         @id @default(autoincrement())
+  orderCode     String      @unique
+  totalPrice    Int
+  status        OrderStatus @default(pending)
+  paymentMethod String
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  userId        String
+  user          User        @relation(fields: [userId], references: [id])
+}
+
+model RecentlyViewedProduct {
+  id        Int      @id @default(autoincrement())
+  userId    String
+  productId Int
+  createdAt DateTime @default(now())
+
+  user      User    @relation(fields: [userId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
+
+  @@unique([userId, productId])
+}
