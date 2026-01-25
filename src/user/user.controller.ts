@@ -1,5 +1,5 @@
 import { Controller, Get, UseGuards } from '@nestjs/common'
-import { JwtAuthGuard } from '../auth/auth.guard'
+import { JwtAuthGuard } from '../auth/guard/auth.guard'
 import { CurrentUser } from '../auth/decorators/current-user.decorator'
 
 @Controller('user')
