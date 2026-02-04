@@ -5,6 +5,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { PaymentModule } from './payment/payment.module';
+import { ProductModule } from './product/product.module';
 
 
 
@@ -16,6 +17,7 @@ import { PaymentModule } from './payment/payment.module';
     ConfigModule.forRoot({ 
       isGlobal: true
      }),
+    ProductModule,
 ],
   controllers: [AppController],
   providers: [AppService],
